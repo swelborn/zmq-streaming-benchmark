@@ -20,6 +20,7 @@ RUN apt-get update                                      && \
     libtool \
     pkg-config \
     cmake \
+    vim \
     && apt-get clean all                                && \
     rm -rf /var/lib/apt/lists/*                                                
 
