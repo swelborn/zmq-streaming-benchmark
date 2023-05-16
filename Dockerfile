@@ -41,3 +41,5 @@ RUN cd /src && mkdir build && cd build                                          
     cmake ..                                                                        && \
     cmake --build . -j4                                                             && \
     cmake --install .
+
+COPY ./scripts /scripts
