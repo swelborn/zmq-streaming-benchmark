@@ -39,27 +39,32 @@ int main(int argc, char *argv[])
     const char *connect_to;
     int message_count;
     size_t message_size;
+    int num_connections;
+    int num_io_threads;
     void *ctx;
     void *s;
     int rc;
     int i;
+    int j;
     zmq_msg_t msg;
     void *watch;
     unsigned long elapsed;
     double throughput;
     double megabits;
 
-    if (argc != 4 && argc != 5)
+    if (argc != 6 && argc != 5)
     {
-        printf("usage: pull <connect-to> <message-size> <message-count> "
+        printf("usage: pull <connect-to> <message-size> <message-count> <num_io_threads> <num-connections> "
                "\n");
         return 1;
     }
     connect_to = argv[1];
     message_size = atoi(argv[2]);
     message_count = atoi(argv[3]);
+    num_io_threads = atoi(argv[4]);
+    num_connections = atoi(argv[5]);
 
-    ctx = zmq_init(1);
+    ctx = zmq_init(num_io_threads);
     if (!ctx)
     {
         printf("error in zmq_init: %s\n", zmq_strerror(errno));
@@ -72,8 +77,10 @@ int main(int argc, char *argv[])
         printf("error in zmq_socket: %s\n", zmq_strerror(errno));
         return -1;
     }
-
-    rc = zmq_connect(s, connect_to);
+    for (j = 0; j != num_connections - 1; j++)
+    {
+        rc = zmq_connect(s, connect_to);
+    }
     if (rc != 0)
     {
         printf("error in zmq_connect: %s\n", zmq_strerror(errno));

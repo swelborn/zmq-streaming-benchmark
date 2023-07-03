@@ -4,8 +4,9 @@ cd /src/build
 
 n_msgs=1000000
 msg_size=200000
-n_ports=16
+n_ports=1
 port_base=5535
+num_io_threads=20
 
 # Define the array of ports
 for ((i=0; i<$n_ports; i++)); do
@@ -13,7 +14,7 @@ for ((i=0; i<$n_ports; i++)); do
 done
 
 # Loop through the array and run the command with each port
-for port in "${PORTS[@]}"
-do
-  ./push "tcp://$ZMQ_BIND_IP:$port" $msg_size $n_msgs &
-done
+# for port in "${PORTS[@]}"
+# do
+./push "tcp://$ZMQ_BIND_IP:$port_base" $msg_size $n_msgs $num_io_threads &
+# done

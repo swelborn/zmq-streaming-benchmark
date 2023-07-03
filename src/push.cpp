@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     const char *bind_to;
     int message_count;
     int message_size;
+    int num_io_threads;
     void *ctx;
     void *s;
     int rc;
@@ -51,14 +52,15 @@ int main(int argc, char *argv[])
     if (argc != 4 && argc != 5)
     {
         printf("usage: push <bind-to> <message-size> "
-               "<message-count>\n");
+               "<message-count> <io_threads>\n");
         return 1;
     }
     bind_to = argv[1];
     message_size = atoi(argv[2]);
     message_count = atoi(argv[3]);
+    num_io_threads = atoi(argv[4]);
 
-    ctx = zmq_init(1);
+    ctx = zmq_init(num_io_threads);
     if (!ctx)
     {
         printf("error in zmq_init: %s\n", zmq_strerror(errno));
