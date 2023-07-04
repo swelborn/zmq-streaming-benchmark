@@ -21,7 +21,11 @@ add_executable(push_mt
     push_mt.cpp
 )
 
-foreach(target push_mt push pull)
+add_executable(push_mt_mc
+    push_mt_mc.cpp
+)
+
+foreach(target push_mt push pull push_mt_mc)
     target_link_libraries(${target} PUBLIC Threads::Threads libzmq cppzmq)
     target_include_directories(${target} PUBLIC ${ZeroMQ_INCLUDE_DIR})
 endforeach()
