@@ -2,12 +2,12 @@
 
 cd /src/build
 
-n_msgs=1000000
-msg_size=200000
-n_ports=16
-port_base=5535
-n_threads=20
-io_threads=1
+n_msgs=10000000
+msg_size=20000
+n_ports=10
+port_base=5525
+n_threads=10
+io_threads=16
 
 # Define the array of ports
 for ((i=0; i<$n_ports; i++)); do
@@ -15,4 +15,4 @@ for ((i=0; i<$n_ports; i++)); do
 done
 
 # Loop through the array and run the command with each port
-./push_mt "*" $port_base $msg_size $n_msgs $n_threads $io_threads &
+./push_mt_mc "*" $port_base $msg_size $n_msgs $n_threads $io_threads

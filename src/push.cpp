@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 
 // keys are arbitrary but must match local_lat.cpp
 const char server_pubkey[] = "DX4nh=yUn{-9ugra0X3Src4SU-4xTgqxcYY.+<SH";
@@ -59,6 +60,7 @@ int main(int argc, char *argv[])
     message_size = atoi(argv[2]);
     message_count = atoi(argv[3]);
     num_io_threads = atoi(argv[4]);
+    std::cout << "Num io threads: " << num_io_threads << std::endl;
 
     ctx = zmq_init(num_io_threads);
     if (!ctx)
@@ -66,6 +68,8 @@ int main(int argc, char *argv[])
         printf("error in zmq_init: %s\n", zmq_strerror(errno));
         return -1;
     }
+    zmq_ctx_set(ctx, ZMQ_IO_THREADS, num_io_threads);
+    std::cout << "Num io threads: " << zmq_ctx_get(ctx, ZMQ_IO_THREADS) << std::endl;
 
     s = zmq_socket(ctx, ZMQ_PUSH);
     if (!s)

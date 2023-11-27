@@ -40,6 +40,26 @@ const char server_pubkey[] = "DX4nh=yUn{-9ugra0X3Src4SU-4xTgqxcYY.+<SH";
 const char client_pubkey[] = "<n^oA}I:66W+*ds3tAmi1+KJzv-}k&fC2aA5Bj0K";
 const char client_prvkey[] = "9R9bV}[6z6DC-%$!jTVTKvWc=LEL{4i4gzUe$@Zx";
 
+inline void set_context_cpu_mask(zmq::context_t &context,
+                                 const std::vector<int> &cpus)
+{
+  int hardware_concurrency = std::thread::hardware_concurrency();
+
+  for (unsigned int i = 0; i < hardware_concurrency; i++)
+  {
+    if (std::find(cpus.begin(), cpus.end(), i) != cpus.end())
+    {
+      // 7 = ZMQ_THREAD_AFFINITY_CPU_ADD
+      zmq_ctx_set((void *)context, 7, i);
+    }
+    else
+    {
+      // 8 = ZMQ_THREAD_AFFINITY_CPU_REMOVE
+      zmq_ctx_set((void *)context, 8, i);
+    }
+  }
+}
+
 void set_cpu_affinity(std::thread &t, const std::vector<int> &cpus)
 {
   cpu_set_t cpuset;
@@ -58,15 +78,25 @@ void set_cpu_affinity(std::thread &t, const std::vector<int> &cpus)
 }
 
 // Function to receive data on the socket
-void push_data(zmq::context_t *context, std::string bind_to, int message_count, size_t message_size, uint64_t i)
+void push_data(std::string bind_to, int message_count, size_t message_size, uint64_t i, const std::vector<int> &cpus)
 {
-  zmq::socket_t push_socket(*context, zmq::socket_type::push);
+  zmq::context_t context(4);
+
+  // Get the maximum priority for the specified scheduler type
+  int scheduler_priority = sched_get_priority_max(SCHED_RR);
+
+  // Set the thread scheduler policy and priority for the context
+  zmq_ctx_set((void *)context, ZMQ_THREAD_SCHED_POLICY, SCHED_RR);
+  zmq_ctx_set((void *)context, ZMQ_THREAD_PRIORITY, scheduler_priority);
+  set_context_cpu_mask(context, cpus);
+
+  zmq::socket_t push_socket(context, zmq::socket_type::push);
+  push_socket.set(zmq::sockopt::sndbuf, 4194304);
   uint64_t affinity = 1ULL << i;
   try
   {
     // push_socket.set(zmq::sockopt::affinity, affinity);
     push_socket.set(zmq::sockopt::immediate, 1);
-    push_socket.set(zmq::sockopt::sndbuf, 4194304);
     push_socket.bind(bind_to);
   }
   catch (zmq::error_t &e)
@@ -129,12 +159,12 @@ int main(int argc, char *argv[])
   std::cout << "Number of IO threads set: " << ctx.get(zmq::ctxopt::io_threads) << std::endl;
   std::vector<std::thread> push_threads;
 
-  std::vector<std::vector<int>> cpu_sets = {{0, 1, 2, 3, 4}, {5, 5, 6, 8, 9}, {10, 11, 12, 13, 14}, {15, 16, 17, 18, 19}};
+  std::vector<std::vector<int>> cpu_sets = {{0, 10}, {1, 11}, {2, 12}, {3, 13}, {4, 14}, {5, 15}, {6, 16}, {7, 17}, {8, 18}, {9, 19}};
 
   for (uint64_t i = 0; i < n_threads; i++)
   {
-    push_threads.emplace_back(push_data, &ctx, bind_to[i], message_count_per_thread, message_size, i);
-    // set_cpu_affinity(push_threads[i], cpu_sets[i]);
+    push_threads.emplace_back(push_data, bind_to[i], message_count_per_thread, message_size, i, cpu_sets[i]);
+    set_cpu_affinity(push_threads[i], cpu_sets[i]);
   }
 
   for (auto &thread : push_threads)
