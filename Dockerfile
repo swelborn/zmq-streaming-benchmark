@@ -12,6 +12,7 @@ RUN apt-get update                                      && \
     libkrb5-dev \
     libsodium-dev \
     libtool \
+    jq \
     pkg-config \
     cmake \
     vim \
