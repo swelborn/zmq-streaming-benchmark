@@ -32,3 +32,4 @@
 *.app
 
 /src/build/
+.vscode/settings.json
