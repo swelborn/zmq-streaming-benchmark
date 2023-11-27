@@ -35,11 +35,6 @@
 #include <sched.h>
 #include <pthread.h>
 
-// keys are arbitrary but must match local_lat.cpp
-const char server_pubkey[] = "DX4nh=yUn{-9ugra0X3Src4SU-4xTgqxcYY.+<SH";
-const char client_pubkey[] = "<n^oA}I:66W+*ds3tAmi1+KJzv-}k&fC2aA5Bj0K";
-const char client_prvkey[] = "9R9bV}[6z6DC-%$!jTVTKvWc=LEL{4i4gzUe$@Zx";
-
 void set_cpu_affinity(std::thread &t, const std::vector<int> &cpus)
 {
   cpu_set_t cpuset;
