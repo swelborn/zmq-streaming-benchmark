@@ -10,7 +10,7 @@ n_ports=$n_pushing_threads
 n_msgs_per_port=$(($n_msgs / $n_pushing_threads))
 port_base=5525
 n_io_threads=10
-n_connections=1000
+n_connections=10
 
 # Define the array of ports
 for ((i=0; i<$n_ports; i++)); do
