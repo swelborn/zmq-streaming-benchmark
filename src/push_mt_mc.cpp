@@ -155,8 +155,6 @@ int main(int argc, char *argv[])
     bind_to[i] = "tcp://" + bind_ip + ":" + std::to_string(first_port + i);
   }
 
-  zmq::context_t ctx = zmq::context_t(io_threads);
-  std::cout << "Number of IO threads set: " << ctx.get(zmq::ctxopt::io_threads) << std::endl;
   std::vector<std::thread> push_threads;
 
   std::vector<std::vector<int>> cpu_sets = {{0, 1, 10, 11, 8}, {2, 3, 12, 13, 9}, {4, 5, 14, 15, 18}, {6, 7, 16, 17, 19}};
@@ -173,7 +171,7 @@ int main(int argc, char *argv[])
     thread.join();
   }
 
-  zmq_ctx_destroy(&ctx);
+  // zmq_ctx_destroy(&ctx);
 
   return 0;
 }
