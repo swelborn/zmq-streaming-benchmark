@@ -13,6 +13,7 @@ RUN apt-get update                                      && \
     libsodium-dev \
     libtool \
     jq \
+    bc \
     pkg-config \
     cmake \
     vim \
@@ -39,8 +40,3 @@ RUN cd /src && mkdir build && cd build                                          
     cmake --install .
 
 COPY ./scripts /scripts
-
-RUN apt-get update                                      && \
-    apt-get upgrade --yes                               && \
-    apt-get install --yes \
-    bc 
