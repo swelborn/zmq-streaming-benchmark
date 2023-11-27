@@ -80,7 +80,7 @@ void set_cpu_affinity(std::thread &t, const std::vector<int> &cpus)
 // Function to receive data on the socket
 void push_data(std::string bind_to, int message_count, size_t message_size, uint64_t i, const std::vector<int> &cpus)
 {
-  zmq::context_t context(4);
+  zmq::context_t context(2);
 
   // Get the maximum priority for the specified scheduler type
   int scheduler_priority = sched_get_priority_max(SCHED_RR);
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 
   if (argc != 7)
   {
-    printf("usage: push_mt <bind_ip> <first-port> <message-size> "
+    printf("usage: push_mt_mc <bind_ip> <first-port> <message-size> "
            "<message-count> <threads> <io_threads>\n");
     return 1;
   }
@@ -159,7 +159,8 @@ int main(int argc, char *argv[])
   std::cout << "Number of IO threads set: " << ctx.get(zmq::ctxopt::io_threads) << std::endl;
   std::vector<std::thread> push_threads;
 
-  std::vector<std::vector<int>> cpu_sets = {{0, 10}, {1, 11}, {2, 12}, {3, 13}, {4, 14}, {5, 15}, {6, 16}, {7, 17}, {8, 18}, {9, 19}};
+  std::vector<std::vector<int>> cpu_sets = {{0, 1, 10, 11, 8}, {2, 3, 12, 13, 9}, {4, 5, 14, 15, 18}, {6, 7, 16, 17, 19}};
+  // std::vector<std::vector<int>> cpu_sets = {{0, 1, 8, 9}, {2, 3, 10, 11}, {4, 5, 12, 13}, {6, 7, 14, 15}};
 
   for (uint64_t i = 0; i < n_threads; i++)
   {
