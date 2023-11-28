@@ -101,7 +101,7 @@ void push_data(std::string bind_to, int message_count, size_t message_size, uint
     std::cerr << "Error (ZMQ): " << e.what() << std::endl;
     std::exit(1);
   }
-  std::cout << "Affinity" << push_socket.get(zmq::sockopt::affinity) << std::endl;
+  // std::cout << "Affinity" << push_socket.get(zmq::sockopt::affinity) << std::endl;
 
   std::cout << "Push socket bound to: " << bind_to << std::endl;
 
@@ -153,8 +153,9 @@ int main(int argc, char *argv[])
 
   std::vector<std::thread> push_threads;
 
-  std::vector<std::vector<int>> cpu_sets = {{0, 1, 10, 11, 8}, {2, 3, 12, 13, 9}, {4, 5, 14, 15, 18}, {6, 7, 16, 17, 19}};
+  // std::vector<std::vector<int>> cpu_sets = {{0, 1, 10, 11, 8}, {2, 3, 12, 13, 9}, {4, 5, 14, 15, 18}, {6, 7, 16, 17, 19}};
   // std::vector<std::vector<int>> cpu_sets = {{0, 1, 8, 9}, {2, 3, 10, 11}, {4, 5, 12, 13}, {6, 7, 14, 15}};
+  std::vector<std::vector<int>> cpu_sets = {{0, 1}, {8, 9}, {2, 3}, {10, 11}, {4, 5}, {12, 13}, {6, 7}, {14, 15}};
 
   for (uint64_t i = 0; i < n_threads; i++)
   {

@@ -4,9 +4,9 @@ cd /src/build
 
 n_msgs=100000
 msg_size=2000000
-n_ports=4
+n_ports=8
 port_base=5525
-n_threads=4
+n_threads=8
 io_threads=16
 
 # Define the array of ports
