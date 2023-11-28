@@ -5,12 +5,12 @@ cd /src/build
 n_msgs=$1
 n_msgs=100000
 msg_size=2000000
-n_pushing_threads=4
+n_pushing_threads=8
 n_ports=$n_pushing_threads
 n_msgs_per_port=$(($n_msgs / $n_pushing_threads))
 port_base=5525
 n_io_threads=10
-n_connections=10
+n_connections=100
 
 # Define the array of ports
 for ((i=0; i<$n_ports; i++)); do
