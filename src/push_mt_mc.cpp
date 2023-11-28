@@ -35,7 +35,6 @@
 #include <sched.h>
 #include <pthread.h>
 
-
 inline void set_context_cpu_mask(zmq::context_t &context,
                                  const std::vector<int> &cpus)
 {
@@ -74,20 +73,20 @@ void set_cpu_affinity(std::thread &t, const std::vector<int> &cpus)
 }
 
 // Function to receive data on the socket
-void push_data(std::string bind_to, int message_count, size_t message_size, uint64_t i, const std::vector<int> &cpus)
+void push_data(std::string bind_to, int message_count, size_t message_size, uint64_t i)
 {
   zmq::context_t context(2);
 
   // Get the maximum priority for the specified scheduler type
-  int scheduler_priority = sched_get_priority_max(SCHED_RR);
+  // int scheduler_priority = sched_get_priority_max(SCHED_RR);
 
   // Set the thread scheduler policy and priority for the context
-  zmq_ctx_set((void *)context, ZMQ_THREAD_SCHED_POLICY, SCHED_RR);
-  zmq_ctx_set((void *)context, ZMQ_THREAD_PRIORITY, scheduler_priority);
-  set_context_cpu_mask(context, cpus);
+  // zmq_ctx_set((void *)context, ZMQ_THREAD_SCHED_POLICY, SCHED_RR);
+  // zmq_ctx_set((void *)context, ZMQ_THREAD_PRIORITY, scheduler_priority);
+  // set_context_cpu_mask(context, cpus);
 
   zmq::socket_t push_socket(context, zmq::socket_type::push);
-  push_socket.set(zmq::sockopt::sndbuf, 4194304);
+  // push_socket.set(zmq::sockopt::sndbuf, 4194304);
   uint64_t affinity = 1ULL << i;
   try
   {
@@ -155,12 +154,12 @@ int main(int argc, char *argv[])
 
   // std::vector<std::vector<int>> cpu_sets = {{0, 1, 10, 11, 8}, {2, 3, 12, 13, 9}, {4, 5, 14, 15, 18}, {6, 7, 16, 17, 19}};
   // std::vector<std::vector<int>> cpu_sets = {{0, 1, 8, 9}, {2, 3, 10, 11}, {4, 5, 12, 13}, {6, 7, 14, 15}};
-  std::vector<std::vector<int>> cpu_sets = {{0, 1}, {8, 9}, {2, 3}, {10, 11}, {4, 5}, {12, 13}, {6, 7}, {14, 15}};
+  // std::vector<std::vector<int>> cpu_sets = {{0, 1}, {8, 9}, {2, 3}, {10, 11}, {4, 5}, {12, 13}, {6, 7}, {14, 15}};
 
   for (uint64_t i = 0; i < n_threads; i++)
   {
-    push_threads.emplace_back(push_data, bind_to[i], message_count_per_thread, message_size, i, cpu_sets[i]);
-    set_cpu_affinity(push_threads[i], cpu_sets[i]);
+    push_threads.emplace_back(push_data, bind_to[i], message_count_per_thread, message_size, i);
+    // set_cpu_affinity(push_threads[i], cpu_sets[i]);
   }
 
   for (auto &thread : push_threads)
